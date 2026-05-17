@@ -1,1 +1,3 @@
-G-PORTAL is a Matrix-inspired web dashboard and entertainment hub featuring a sleek cyberpunk interface with integrated tools like a games library, live chat, YouTube access, proxy browsing, and a soundboard. Designed with a futuristic neon aesthetic, it delivers an immersive browser-based “desktop” experience for media, communication, and web utilities.
+G-Portal
+
+A sleek all-in-one gaming portal built with a futuristic Matrix-inspired design. G-Portal gives users quick access to games, live chat, YouTube, movies, soundboards, and proxy tools through a clean and responsive dashboard interface. Designed for speed, simplicity, and style, it combines entertainment and utility into one modern web experience. Created by CantBlockThis GitHub and hosted on G-Portal Website.
