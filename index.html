@@ -62,8 +62,74 @@
         #matrix-bg { position: fixed; top: 55px; left: 0; width: 100%; height: calc(100vh - 55px); border: none; z-index: 1; display: none; }
         #content-frame { width: 100%; height: calc(100vh - 55px); border: none; display: none; position: relative; z-index: 40; background: #000; }
 
+        /* --- MOD PANEL STYLES --- */
+        #mod-panel {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 360px; background: #1a1a1a; border: 1px solid #3a2a1a; border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7); z-index: 30000; display: none;
+            flex-direction: column; font-family: 'Segoe UI', sans-serif; overflow: hidden;
+        }
+        .mod-header {
+            background: #2a1f15; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid #332211; cursor: move;
+        }
+        .mod-title { color: #ffb700; font-weight: bold; font-size: 0.95rem; display: flex; align-items: center; gap: 6px; user-select: none; }
+        .mod-title span { color: #8a7a6a; font-size: 0.8rem; font-weight: normal; }
+        .mod-close { color: #8a7a6a; background: none; border: none; font-size: 1.2rem; cursor: pointer; }
+        .mod-close:hover { color: #fff; }
+        .mod-body { padding: 16px; background: #141414; max-height: 400px; overflow-y: auto; }
+        .mod-section-title { color: #666; font-size: 0.75rem; font-weight: bold; letter-spacing: 1px; margin-bottom: 12px; }
+        .mod-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .mod-btn {
+            border: none; border-radius: 6px; padding: 10px; color: white; font-weight: 500;
+            font-size: 0.85rem; text-align: left; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: 0.2s;
+        }
+        .mod-btn:hover { filter: brightness(1.2); transform: scale(1.02); }
+        
+        /* Floating Mod Handle */
+        #mod-dock-btn {
+            position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px;
+            background: #ffb700; color: #111; border-radius: 50%; border: 3px solid #1a1a1a;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 29999; display: none;
+            align-items: center; justify-content: center; font-weight: bold; font-size: 0.8rem;
+            cursor: move; user-select: none; font-family: 'Segoe UI', sans-serif;
+            flex-direction: column; line-height: 1;
+        }
+
+        /* Mod Button Themes */
+        .btn-blue { background: #1c2d5a; }
+        .btn-purple { background: #3c1c5a; }
+        .btn-red { background: #5a1c1c; }
+
+        /* --- VISUAL EFFECT STATES --- */
+        .effect-shake { animation: crazy-shake 0.1s infinite alternate; }
+        @keyframes crazy-shake { 0% { transform: translate(2px, 1px) rotate(0deg); } 100% { transform: translate(-1px, -2px) rotate(1deg); } }
+        
+        .effect-spin { animation: crazy-spin 2s infinite linear; }
+        @keyframes crazy-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .effect-blackout { filter: brightness(0) !important; }
+        .effect-red-alert { animation: red-flash 0.5s infinite alternate; }
+        @keyframes red-flash { 0% { background-color: #0b0b0b; } 100% { background-color: #5a0000; } }
+        
+        .effect-dizzy { filter: blur(4px) hue-rotate(90deg); }
+        
+        .baby-drop {
+            position: fixed; font-size: 3rem; z-index: 10000; pointer-events: none;
+            animation: fall linear forwards;
+        }
+        @keyframes fall { 0% { transform: translateY(-50px) rotate(0deg); } 100% { transform: translateY(110vh) rotate(360deg); } }
+
+        .nuke-flash {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: white; z-index: 99999; opacity: 0; pointer-events: none;
+            animation: nuke-wipe 2.5s ease-out forwards;
+        }
+        @keyframes nuke-wipe { 0% { opacity: 0; } 15% { opacity: 1; } 40% { opacity: 1; background: #ffaa00; } 100% { opacity: 0; } }
+
         @media (max-width: 768px) { #mobile-panic { display: block; } }
     </style>
+    <script src="https://js.pusher.com/8.3.0/pusher.min.js"></script>
 </head>
 <body>
 
@@ -72,7 +138,7 @@
 <div id="google-home">
     <div class="search-container">
         <img src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png" class="google-logo" alt="Google" onclick="showPortal()">
-        <input type="text" class="search-bar">
+        <input type="text" class="search-bar" id="google-search" placeholder="Search Google or type a URL">
     </div>
 </div>
 
@@ -85,6 +151,37 @@
     <div class="credit-text">Made By CantBlockThis</div>
     <div style="color: #666; font-size: 0.75rem;">ESC to Panic</div>
 </nav>
+
+<div id="mod-dock-btn">🛡️<div>MODS</div></div>
+
+<div id="mod-panel">
+    <div class="mod-header" id="mod-header-drag">
+        <div class="mod-title">🛡️ MOD PANEL <span>∞ permanent</span></div>
+        <button class="mod-close" onclick="toggleModPanel(false)">×</button>
+    </div>
+    <div class="mod-body">
+        <div class="mod-section-title">💀 TROLL EFFECTS</div>
+        <div class="mod-grid">
+            <button class="mod-btn btn-blue" onclick="triggerEffect('earrape')">💥 Earrape</button>
+            <button class="mod-btn btn-blue" onclick="triggerEffect('fart')">💨 Fart Sound</button>
+            <button class="mod-btn btn-blue" onclick="triggerEffect('airhorn')">📢 Airhorn</button>
+            <button class="mod-btn btn-blue" onclick="triggerEffect('alarm')">🚨 Alarm</button>
+            <button class="mod-btn btn-blue" onclick="triggerEffect('baby-cry')">👶 Baby Crying</button>
+            
+            <button class="mod-btn btn-purple" onclick="triggerEffect('screen-shake')">🌊 Screen Shake</button>
+            <button class="mod-btn btn-purple" onclick="triggerEffect('spin')">🔄 Spin Everything</button>
+            <button class="mod-btn btn-purple" onclick="triggerEffect('blackout')">⬛ Blackout</button>
+            <button class="mod-btn btn-purple" onclick="triggerEffect('red-alert')">🔴 Red Alert</button>
+            <button class="mod-btn btn-purple" onclick="triggerEffect('confetti')">🎉 Confetti</button>
+            <button class="mod-btn btn-purple" onclick="triggerEffect('dizzy')">😵 Dizzy</button>
+            <button class="mod-btn btn-purple" onclick="triggerEffect('matrix')">🖥️ Matrix Rain</button>
+            <button class="mod-btn btn-purple" onclick="triggerEffect('baby-invasion')">👶 Baby Invasion</button>
+            
+            <button class="mod-btn btn-red" onclick="triggerEffect('nuke')">☢️ NUKE</button>
+            <button class="mod-btn btn-red" onclick="triggerEffect('ghost')">👻 Ghost Mode</button>
+        </div>
+    </div>
+</div>
 
 <iframe id="matrix-bg" src="https://rezmason.github.io/matrix/"></iframe>
 
@@ -180,6 +277,29 @@
     const google = document.getElementById('google-home');
     const pNav = document.getElementById('portal-nav');
     const matrix = document.getElementById('matrix-bg');
+    const searchBar = document.getElementById('google-search');
+    const modPanel = document.getElementById('mod-panel');
+    const modDockBtn = document.getElementById('mod-dock-btn');
+    
+    let audioCtx = null;
+    let isModded = false;
+
+    // --- PASTE YOUR PUSHER KEY HERE ---
+    const PUSHER_KEY = 'dbd30ae51ed01fc80f82'; 
+    const PUSHER_CLUSTER = 'us2'; 
+
+    // Create a peer network link
+    const pusher = new Pusher(PUSHER_KEY, { cluster: PUSHER_CLUSTER, forceTLS: true });
+    // Pusher client events require 'private-' channel prefix names
+    const channel = pusher.subscribe('private-global-troll');
+    const browserId = Math.random().toString(36).substring(7);
+
+    // Listen for peer signals
+    channel.bind('client-global-effect', function(data) {
+        if(data.sender !== browserId) {
+            executeLocalEffect(data.effect);
+        }
+    });
     
     function killPopups() {
         window.onbeforeunload = null;
@@ -188,16 +308,41 @@
     }
     setInterval(killPopups, 1000);
 
+    searchBar.addEventListener('input', (e) => {
+        if (e.target.value.toLowerCase().trim() === 'mod me') {
+            e.target.value = ''; 
+            isModded = true;
+            showPortal();        
+            toggleModPanel(true); 
+        }
+    });
+
+    function toggleModPanel(show) {
+        if(!isModded) return;
+        if (show) {
+            modPanel.style.display = 'flex';
+            modDockBtn.style.display = 'none';
+        } else {
+            modPanel.style.display = 'none';
+            modDockBtn.style.display = 'flex';
+        }
+    }
+
     function showPortal() {
         google.style.display = 'none';
         pNav.style.display = 'flex';
         portal.style.display = 'grid';
         matrix.style.display = 'block';
         document.body.style.background = "#0b0b0b";
+        if(isModded && modPanel.style.display !== 'flex') {
+            modDockBtn.style.display = 'flex';
+        }
     }
     function openGames() { portal.style.display = 'none'; games.style.display = 'grid'; }
     function goHome() {
         killPopups();
+        modPanel.style.display = 'none';
+        if(isModded) modDockBtn.style.display = 'flex';
         frame.style.display = 'none'; frame.src = 'about:blank';
         games.style.display = 'none'; portal.style.display = 'grid';
         pNav.style.display = 'flex'; matrix.style.display = 'block';
@@ -211,7 +356,167 @@
     function openInNewTab(url) { window.open(url, '_blank').focus(); }
     function panic() { killPopups(); window.location.replace("https://www.google.com"); }
     window.addEventListener('keydown', (e) => { if (e.key === "Escape") panic(); });
-</script>
 
+    function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+    
+    function playTone(freq, type, duration, volume) {
+        initAudio();
+        let osc = audioCtx.createOscillator();
+        let gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(volume, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+    }
+
+    // Trigger & Broadcast routine
+    function triggerEffect(effectName) {
+        executeLocalEffect(effectName); // Execute on your screen immediately
+        
+        // Ship the packet across the global mesh channel to other open tabs
+        channel.trigger('client-global-effect', { effect: effectName, sender: browserId });
+    }
+
+    // Full Implementation Action Processing Engine
+    function executeLocalEffect(effectName) {
+        if (effectName === 'earrape') {
+            for(let i=0; i<5; i++) { playTone(120, 'sawtooth', 2.0, 0.8); playTone(100, 'square', 2.0, 0.8); }
+        }
+        else if (effectName === 'fart') {
+            initAudio();
+            let osc = audioCtx.createOscillator();
+            let gain = audioCtx.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(90, audioCtx.currentTime);
+            osc.frequency.linearRampToValueAtTime(40, audioCtx.currentTime + 0.6);
+            gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.6);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.6);
+        }
+        else if (effectName === 'airhorn') {
+            [440, 443, 448, 220].forEach(f => playTone(f, 'sawtooth', 1.2, 0.4));
+        }
+        else if (effectName === 'alarm') {
+            initAudio();
+            let osc = audioCtx.createOscillator();
+            let gain = audioCtx.createGain();
+            osc.type = 'sine'; osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+            osc.frequency.linearRampToValueAtTime(1200, audioCtx.currentTime + 0.3);
+            osc.frequency.linearRampToValueAtTime(800, audioCtx.currentTime + 0.6);
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + 1.2);
+        }
+        else if (effectName === 'baby-cry') {
+            playTone(750, 'triangle', 0.5, 0.3);
+            setTimeout(() => playTone(650, 'triangle', 0.6, 0.3), 300);
+        }
+        else if (effectName === 'screen-shake') {
+            document.body.classList.toggle('effect-shake');
+        }
+        else if (effectName === 'spin') {
+            document.getElementById('portal-home').classList.toggle('effect-spin');
+            document.getElementById('games-library').classList.toggle('effect-spin');
+        }
+        else if (effectName === 'blackout') {
+            document.body.classList.toggle('effect-blackout');
+        }
+        else if (effectName === 'red-alert') {
+            document.body.classList.toggle('effect-red-alert');
+        }
+        else if (effectName === 'dizzy') {
+            document.body.classList.toggle('effect-dizzy');
+        }
+        else if (effectName === 'matrix') {
+            matrix.style.display = matrix.style.display === 'none' ? 'block' : 'none';
+        }
+        else if (effectName === 'confetti') {
+            alert("🎉 Global Confetti Blast Initialized!");
+        }
+        else if (effectName === 'ghost') {
+            document.body.style.opacity = document.body.style.opacity === '0.3' ? '1' : '0.3';
+        }
+        else if (effectName === 'baby-invasion') {
+            for (let i = 0; i < 15; i++) {
+                setTimeout(() => {
+                    let b = document.createElement('div');
+                    b.className = 'baby-drop';
+                    b.innerHTML = '👶';
+                    b.style.left = Math.random() * 90 + 'vw';
+                    b.style.animationDuration = (Math.random() * 2 + 1) + 's';
+                    document.body.appendChild(b);
+                    setTimeout(() => b.remove(), 3000);
+                }, i * 200);
+            }
+        }
+        else if (effectName === 'nuke') {
+            let flash = document.createElement('div');
+            flash.className = 'nuke-flash';
+            document.body.appendChild(flash);
+            [100, 60, 40].forEach(f => playTone(f, 'sawtooth', 2.0, 0.9));
+            setTimeout(() => { flash.remove(); document.body.className = ''; goHome(); }, 2500);
+        }
+    }
+
+    /* --- DRAGGING ENGINE (MOUSE & TOUCH INTEGRATED) --- */
+    function makeElementDraggable(dragElem, targetContainer, clickCallback) {
+        let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+        let hasMoved = false;
+
+        dragElem.addEventListener('mousedown', dragMouseDown);
+        dragElem.addEventListener('touchstart', dragTouchStart, { passive: false });
+
+        function dragMouseDown(e) {
+            e.preventDefault();
+            hasMoved = false;
+            pos3 = e.clientX; pos4 = e.clientY;
+            document.onmouseup = closeDragElement;
+            document.onmousemove = elementDrag;
+        }
+
+        function dragTouchStart(e) {
+            hasMoved = false;
+            pos3 = e.touches[0].clientX; pos4 = e.touches[0].clientY;
+            document.ontouchend = closeDragElement;
+            document.ontouchmove = elementTouchDrag;
+        }
+
+        function elementDrag(e) {
+            hasMoved = true;
+            pos1 = pos3 - e.clientX; pos2 = pos4 - e.clientY;
+            pos3 = e.clientX; pos4 = e.clientY;
+            updatePosition(targetContainer.offsetTop - pos2, targetContainer.offsetLeft - pos1);
+        }
+
+        function elementTouchDrag(e) {
+            hasMoved = true;
+            pos1 = pos3 - e.touches[0].clientX; pos2 = pos4 - e.touches[0].clientY;
+            pos3 = e.touches[0].clientX; pos4 = e.touches[0].clientY;
+            updatePosition(targetContainer.offsetTop - pos2, targetContainer.offsetLeft - pos1);
+        }
+
+        function updatePosition(top, left) {
+            if(top < 0) top = 0; if(top > window.innerHeight - 60) top = window.innerHeight - 60;
+            if(left < 0) left = 0; if(left > window.innerWidth - 60) left = window.innerWidth - 60;
+            targetContainer.style.top = top + "px";
+            targetContainer.style.left = left + "px";
+            if(targetContainer === modPanel) targetContainer.style.transform = 'none';
+        }
+
+        function closeDragElement() {
+            document.onmouseup = null; document.onmousemove = null;
+            document.ontouchend = null; document.ontouchmove = null;
+            if (!hasMoved && clickCallback) clickCallback();
+        }
+    }
+
+    makeElementDraggable(document.getElementById('mod-header-drag'), modPanel, null);
+    makeElementDraggable(modDockBtn, modDockBtn, () => { toggleModPanel(true); });
+</script>
 </body>
 </html>
