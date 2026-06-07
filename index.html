@@ -3,22 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Google</title>
-    <link class="icon" type="image/x-icon" href="https://www.google.com/favicon.ico">
+    <title>Clever | Portal</title>
+    <link class="icon" type="image/x-icon" href="https://assets.clever.com/v2/favicon.ico">
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; width: 100%; font-family: arial, sans-serif; background: #fff; overflow: hidden; }
+        body, html { margin: 0; padding: 0; height: 100%; width: 100%; font-family: 'Segoe UI', Arial, sans-serif; background: #fff; overflow-x: hidden; }
         
+        /* --- FAKE CLEVER HOMEPAGE STYLES --- */
+        #clever-home { display: flex; flex-direction: column; background: #f3f6fc; min-height: 100vh; position: relative; z-index: 20; color: #19213d; }
+        
+        /* Clever Navbar */
+        .clever-nav { background: #1c45e2; color: white; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; height: 60px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .clever-nav-left { display: flex; align-items: center; gap: 15px; }
+        .clever-logo { height: 26px; cursor: pointer; user-select: none; }
+        .school-title { font-size: 0.95rem; color: #ffffff; font-weight: 500; }
+        .clever-nav-right { display: flex; align-items: center; gap: 24px; font-size: 0.9rem; }
+        .clever-nav-item { display: flex; align-items: center; gap: 6px; cursor: pointer; opacity: 0.95; font-weight: 500; }
+        .clever-nav-item:hover { opacity: 1; }
+        .clever-search { background: rgba(255,255,255,0.15); border: none; border-radius: 4px; padding: 8px 12px; width: 240px; color: white; outline: none; font-size: 0.85rem; }
+        .clever-search::placeholder { color: rgba(255,255,255,0.7); }
+        .nav-icon { font-size: 1.2rem; }
+
+        /* Clever Layout Grid */
+        .clever-container { display: flex; max-width: 1140px; margin: 0 auto; width: 100%; padding: 30px 20px; box-sizing: border-box; }
+        .clever-sidebar { width: 220px; display: flex; flex-direction: column; gap: 4px; }
+        .sidebar-item { color: #1c45e2; font-weight: 500; font-size: 0.95rem; cursor: pointer; padding: 10px 12px; border-radius: 6px; transition: background 0.2s; }
+        .sidebar-item:hover { background: rgba(28, 69, 226, 0.05); text-decoration: underline; }
+        .sidebar-item.active { background: rgba(28, 69, 226, 0.08); font-weight: 600; }
+        .clever-content { flex: 1; padding-left: 50px; }
+        
+        .section-title { font-size: 1.25rem; font-weight: 600; margin: 0 0 20px 0; color: #19213d; }
+        .clever-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 24px; margin-bottom: 45px; }
+        
+        /* App Badges (No Hearts) */
+        .clever-app { display: flex; flex-direction: column; align-items: center; text-align: center; cursor: pointer; width: 100px; }
+        .app-icon-wrapper { width: 68px; height: 68px; background: white; border-radius: 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); position: relative; margin-bottom: 10px; border: 1px solid #e2e6f0; transition: transform 0.15s, box-shadow 0.15s; }
+        .clever-app:hover .app-icon-wrapper { transform: translateY(-2px); box-shadow: 0 5px 12px rgba(0,0,0,0.08); }
+        .app-icon { width: 44px; height: 44px; object-fit: contain; }
+        .app-label { font-size: 0.8rem; color: #2d3748; font-weight: 500; line-height: 1.25; word-break: break-word; padding: 0 2px; }
+
         /* --- PORTAL STYLES --- */
         #mobile-panic {
             position: fixed; top: 10px; right: 10px; z-index: 20001;
             background: #ff4444; color: white; border: none; padding: 10px 15px;
             border-radius: 5px; font-weight: bold; display: none; cursor: pointer;
         }
-
-        #google-home { display: flex; flex-direction: column; height: 100vh; align-items: center; background: #fff; position: relative; z-index: 20; }
-        .search-container { flex: 1; display: flex; flex-direction: column; align-items: center; padding-top: 100px; width: 100%; }
-        .google-logo { width: 272px; margin-bottom: 30px; cursor: pointer; }
-        .search-bar { width: 100%; max-width: 584px; height: 44px; border: 1px solid #dfe1e5; border-radius: 24px; padding: 0 45px; box-sizing: border-box; outline: none; font-size: 16px; }
         
         #portal-nav {
             display: none; background-color: #000; padding: 0 20px; align-items: center;
@@ -86,7 +114,6 @@
         }
         .mod-btn:hover { filter: brightness(1.2); transform: scale(1.02); }
         
-        /* Floating Mod Handle */
         #mod-dock-btn {
             position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px;
             background: #ffb700; color: #111; border-radius: 50%; border: 3px solid #1a1a1a;
@@ -96,35 +123,22 @@
             flex-direction: column; line-height: 1;
         }
 
-        /* Mod Button Themes */
         .btn-blue { background: #1c2d5a; }
         .btn-purple { background: #3c1c5a; }
         .btn-red { background: #5a1c1c; }
 
-        /* --- VISUAL EFFECT STATES --- */
+        /* EFFECT ANIMATIONS */
         .effect-shake { animation: crazy-shake 0.1s infinite alternate; }
         @keyframes crazy-shake { 0% { transform: translate(2px, 1px) rotate(0deg); } 100% { transform: translate(-1px, -2px) rotate(1deg); } }
-        
         .effect-spin { animation: crazy-spin 2s infinite linear; }
         @keyframes crazy-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
         .effect-blackout { filter: brightness(0) !important; }
         .effect-red-alert { animation: red-flash 0.5s infinite alternate; }
         @keyframes red-flash { 0% { background-color: #0b0b0b; } 100% { background-color: #5a0000; } }
-        
         .effect-dizzy { filter: blur(4px) hue-rotate(90deg); }
-        
-        .baby-drop {
-            position: fixed; font-size: 3rem; z-index: 10000; pointer-events: none;
-            animation: fall linear forwards;
-        }
+        .baby-drop { position: fixed; font-size: 3rem; z-index: 10000; pointer-events: none; animation: fall linear forwards; }
         @keyframes fall { 0% { transform: translateY(-50px) rotate(0deg); } 100% { transform: translateY(110vh) rotate(360deg); } }
-
-        .nuke-flash {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: white; z-index: 99999; opacity: 0; pointer-events: none;
-            animation: nuke-wipe 2.5s ease-out forwards;
-        }
+        .nuke-flash { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: white; z-index: 99999; opacity: 0; pointer-events: none; animation: nuke-wipe 2.5s ease-out forwards; }
         @keyframes nuke-wipe { 0% { opacity: 0; } 15% { opacity: 1; } 40% { opacity: 1; background: #ffaa00; } 100% { opacity: 0; } }
 
         @media (max-width: 768px) { #mobile-panic { display: block; } }
@@ -135,10 +149,86 @@
 
 <button id="mobile-panic" onclick="panic()">EXIT</button>
 
-<div id="google-home">
-    <div class="search-container">
-        <img src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png" class="google-logo" alt="Google" onclick="showPortal()">
-        <input type="text" class="search-bar" id="google-search" placeholder="Search Google or type a URL">
+<div id="clever-home">
+    <div class="clever-nav">
+        <div class="clever-nav-left">
+            <img src="https://assets.clever.com/v2/logos/clever-logo-white.svg" class="clever-logo" alt="Clever Logo" onclick="showPortal()">
+            <span class="school-title">Winnisquam Regional Middle School</span>
+        </div>
+        <div class="clever-nav-right">
+            <input type="text" class="clever-search" id="clever-search-input" placeholder="Search">
+            <div class="clever-nav-item"><span class="nav-icon">📢</span><span>Announcements</span></div>
+            <div class="clever-nav-item"><span class="nav-icon">👤</span></div>
+        </div>
+    </div>
+    
+    <div class="clever-container">
+        <div class="clever-sidebar">
+            <div class="sidebar-item active">Favorite resources</div>
+            <div class="sidebar-item">Teacher Pages</div>
+            <div class="sidebar-item">Instant Login Applications</div>
+            <div class="sidebar-item">Google Apps</div>
+            <div class="sidebar-item">Clever Help Resources</div>
+            <div class="sidebar-item">More Apps</div>
+        </div>
+        
+        <div class="clever-content">
+            <div class="section-title">Favorite resources</div>
+            <div class="clever-grid">
+                <div class="clever-app">
+                    <div class="app-icon-wrapper"><img class="app-icon" src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/Google_Docs_2020_logo.svg/1200px-Google_Docs_2020_logo.svg.png"></div>
+                    <div class="app-label">Google Docs</div>
+                </div>
+                <div class="clever-app">
+                    <div class="app-icon-wrapper"><img class="app-icon" src="https://images.g2crowd.com/uploads/product/image/large_detail/large_detail_9ba551e16f39fa55efab61e89b25fbc7/code-org.png"></div>
+                    <div class="app-label">CodeAI</div>
+                </div>
+                <div class="clever-app">
+                    <div class="app-icon-wrapper"><img class="app-icon" src="https://www.ixl.com/cxp-assets/branding/ixl-logo-social.png"></div>
+                    <div class="app-label">IXL</div>
+                </div>
+                <div class="clever-app">
+                    <div class="app-icon-wrapper"><img class="app-icon" src="https://s3.amazonaws.com/images.clever.com/b0cf4c6488d070b44b7d5420d9ca9fe2a3db6177_medium.png"></div>
+                    <div class="app-label">Savvas EasyBridge</div>
+                </div>
+                <div class="clever-app">
+                    <div class="app-icon-wrapper"><img class="app-icon" src="https://s3.amazonaws.com/images.clever.com/b438289bfba670d8a87679a61ce55bbda60263f3_medium.png"></div>
+                    <div class="app-label">ExploreLearning</div>
+                </div>
+            </div>
+
+            <div class="section-title">Teacher Pages</div>
+            <div class="clever-grid">
+                <div class="clever-app">
+                    <div class="app-icon-wrapper"><img class="app-icon" src="https://assets.clever.com/v2/icons/teacher-page.svg"></div>
+                    <div class="app-label">E. Meyer's Page</div>
+                </div>
+                <div class="clever-app">
+                    <div class="app-icon-wrapper"><img class="app-icon" src="https://assets.clever.com/v2/icons/teacher-page.svg"></div>
+                    <div class="app-label">E. Tole's Page</div>
+                </div>
+                <div class="clever-app">
+                    <div class="app-icon-wrapper"><img class="app-icon" src="https://assets.clever.com/v2/icons/teacher-page.svg"></div>
+                    <div class="app-label">K. Coughlin's Page</div>
+                </div>
+                <div class="clever-app">
+                    <div class="app-icon-wrapper"><img class="app-icon" src="https://assets.clever.com/v2/icons/teacher-page.svg"></div>
+                    <div class="app-label">M. DiProto's Page</div>
+                </div>
+            </div>
+            
+            <div class="section-title">Instant Login Applications</div>
+            <div class="clever-grid">
+                <div class="clever-app">
+                    <div class="app-icon-wrapper"><img class="app-icon" src="https://images.g2crowd.com/uploads/product/image/large_detail/large_detail_9ba551e16f39fa55efab61e89b25fbc7/code-org.png"></div>
+                    <div class="app-label">CodeAI</div>
+                </div>
+                <div class="clever-app">
+                    <div class="app-icon-wrapper"><img class="app-icon" src="https://cdn.iconscout.com/icon/free/png-256/free-codecademy-3628704-3029929.png"></div>
+                    <div class="app-label">Codecademy</div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -293,42 +383,30 @@
     const frame = document.getElementById('content-frame');
     const portal = document.getElementById('portal-home');
     const games = document.getElementById('games-library');
-    const google = document.getElementById('google-home');
+    const cleverHome = document.getElementById('clever-home');
     const pNav = document.getElementById('portal-nav');
     const matrix = document.getElementById('matrix-bg');
-    const searchBar = document.getElementById('google-search');
+    const searchBar = document.getElementById('clever-search-input');
     const modPanel = document.getElementById('mod-panel');
     const modDockBtn = document.getElementById('mod-dock-btn');
     
     let audioCtx = null;
     let isModded = false;
 
-    // --- ENHANCED REALTIME ROUTING SUITE ---
+    // --- PUSHER RE-ROUTE ---
     const PUSHER_KEY = 'dbd30ae51ed01fc80f82'; 
     const PUSHER_CLUSTER = 'us2'; 
     const browserId = Math.random().toString(36).substring(7);
 
-    // Initialize custom multi-room mesh routing
-    const pusher = new Pusher(PUSHER_KEY, {
-        cluster: PUSHER_CLUSTER,
-        forceTLS: true,
-        userAuthentication: { endpoint: null }, 
-        channelAuthorization: { endpoint: null } 
-    });
-
-    // Subscribing to an unauthenticated public communication wire
+    const pusher = new Pusher(PUSHER_KEY, { cluster: PUSHER_CLUSTER, forceTLS: true });
     const channel = pusher.subscribe('global-troll-wire');
 
-    // Handle peer to peer network signals 
     channel.bind('broadcast-effect', function(data) {
-        if (data.sender !== browserId) {
-            executeLocalEffect(data.effect);
-        }
+        if (data.sender !== browserId) { executeLocalEffect(data.effect); }
     });
     
     function killPopups() {
-        window.onbeforeunload = null;
-        window.onunload = null;
+        window.onbeforeunload = null; window.onunload = null;
         try { if (frame.contentWindow) { frame.contentWindow.onbeforeunload = null; frame.contentWindow.onunload = null; } } catch (e) {}
     }
     setInterval(killPopups, 1000);
@@ -353,9 +431,8 @@
         }
     }
 
-    // Comprehensive audio and visual layout routing functions
     function showPortal() {
-        google.style.display = 'none'; pNav.style.display = 'flex';
+        cleverHome.style.display = 'none'; pNav.style.display = 'flex';
         portal.style.display = 'grid'; matrix.style.display = 'block';
         document.body.style.background = "#0b0b0b";
         if(isModded && modPanel.style.display !== 'flex') { modDockBtn.style.display = 'flex'; }
@@ -375,7 +452,7 @@
         frame.src = url;
     }
     function openInNewTab(url) { window.open(url, '_blank').focus(); }
-    function panic() { killPopups(); window.location.replace("https://www.google.com"); }
+    function panic() { killPopups(); window.location.replace("https://clever.com"); }
     window.addEventListener('keydown', (e) => { if (e.key === "Escape") panic(); });
 
     function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
@@ -392,28 +469,21 @@
         osc.start(); osc.stop(audioCtx.currentTime + duration);
     }
 
-    // Trigger & Global Network Sync Relay
     function triggerEffect(effectName) {
-        executeLocalEffect(effectName); // Execute on local instance immediately
-        
-        // Emits payload back onto client loop connection
+        executeLocalEffect(effectName);
         channel.emit('broadcast-effect', { effect: effectName, sender: browserId });
     }
 
-    // Comprehensive Audio and Animation Processing Hub
     function executeLocalEffect(effectName) {
         if (effectName === 'earrape') {
             for(let i=0; i<5; i++) { playTone(120, 'sawtooth', 2.0, 0.8); playTone(100, 'square', 2.0, 0.8); }
         }
         else if (effectName === 'fart') {
             initAudio();
-            let osc = audioCtx.createOscillator();
-            let gain = audioCtx.createGain();
-            osc.type = 'sawtooth';
-            osc.frequency.setValueAtTime(90, audioCtx.currentTime);
+            let osc = audioCtx.createOscillator(); let gain = audioCtx.createGain();
+            osc.type = 'sawtooth'; osc.frequency.setValueAtTime(90, audioCtx.currentTime);
             osc.frequency.linearRampToValueAtTime(40, audioCtx.currentTime + 0.6);
-            gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
-            gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.6);
+            gain.gain.setValueAtTime(0.5, audioCtx.currentTime); gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.6);
             osc.connect(gain); gain.connect(audioCtx.destination);
             osc.start(); osc.stop(audioCtx.currentTime + 0.6);
         }
@@ -422,93 +492,65 @@
         }
         else if (effectName === 'alarm') {
             initAudio();
-            let osc = audioCtx.createOscillator();
-            let gain = audioCtx.createGain();
+            let osc = audioCtx.createOscillator(); let gain = audioCtx.createGain();
             osc.type = 'sine'; osc.frequency.setValueAtTime(800, audioCtx.currentTime);
-            osc.frequency.linearRampToValueAtTime(1200, audioCtx.currentTime + 0.3);
-            osc.frequency.linearRampToValueAtTime(800, audioCtx.currentTime + 0.6);
+            osc.frequency.linearRampToValueAtTime(1200, audioCtx.currentTime + 0.3); osc.frequency.linearRampToValueAtTime(800, audioCtx.currentTime + 0.6);
             gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
             osc.connect(gain); gain.connect(audioCtx.destination);
             osc.start(); osc.stop(audioCtx.currentTime + 1.2);
         }
         else if (effectName === 'baby-cry') {
-            playTone(750, 'triangle', 0.5, 0.3);
-            setTimeout(() => playTone(650, 'triangle', 0.6, 0.3), 300);
+            playTone(750, 'triangle', 0.5, 0.3); setTimeout(() => playTone(650, 'triangle', 0.6, 0.3), 300);
         }
-        else if (effectName === 'screen-shake') {
-            document.body.classList.toggle('effect-shake');
-        }
+        else if (effectName === 'screen-shake') { document.body.classList.toggle('effect-shake'); }
         else if (effectName === 'spin') {
             document.getElementById('portal-home').classList.toggle('effect-spin');
             document.getElementById('games-library').classList.toggle('effect-spin');
         }
-        else if (effectName === 'blackout') {
-            document.body.classList.toggle('effect-blackout');
-        }
-        else if (effectName === 'red-alert') {
-            document.body.classList.toggle('effect-red-alert');
-        }
-        else if (effectName === 'dizzy') {
-            document.body.classList.toggle('effect-dizzy');
-        }
-        else if (effectName === 'matrix') {
-            matrix.style.display = matrix.style.display === 'none' ? 'block' : 'none';
-        }
-        else if (effectName === 'confetti') {
-            alert("🎉 Global Confetti Blast Initialized!");
-        }
-        else if (effectName === 'ghost') {
-            document.body.style.opacity = document.body.style.opacity === '0.3' ? '1' : '0.3';
-        }
+        else if (effectName === 'blackout') { document.body.classList.toggle('effect-blackout'); }
+        else if (effectName === 'red-alert') { document.body.classList.toggle('effect-red-alert'); }
+        else if (effectName === 'dizzy') { document.body.classList.toggle('effect-dizzy'); }
+        else if (effectName === 'matrix') { matrix.style.display = matrix.style.display === 'none' ? 'block' : 'none'; }
+        else if (effectName === 'confetti') { alert("🎉 Global Confetti Blast Initialized!"); }
+        else if (effectName === 'ghost') { document.body.style.opacity = document.body.style.opacity === '0.3' ? '1' : '0.3'; }
         else if (effectName === 'baby-invasion') {
             for (let i = 0; i < 15; i++) {
                 setTimeout(() => {
                     let b = document.createElement('div');
                     b.className = 'baby-drop'; b.innerHTML = '👶';
-                    b.style.left = Math.random() * 90 + 'vw';
-                    b.style.animationDuration = (Math.random() * 2 + 1) + 's';
-                    document.body.appendChild(b);
-                    setTimeout(() => b.remove(), 3000);
+                    b.style.left = Math.random() * 90 + 'vw'; b.style.animationDuration = (Math.random() * 2 + 1) + 's';
+                    document.body.appendChild(b); setTimeout(() => b.remove(), 3000);
                 }, i * 200);
             }
         }
         else if (effectName === 'nuke') {
-            let flash = document.createElement('div');
-            flash.className = 'nuke-flash'; document.body.appendChild(flash);
+            let flash = document.createElement('div'); flash.className = 'nuke-flash'; document.body.appendChild(flash);
             [100, 60, 40].forEach(f => playTone(f, 'sawtooth', 2.0, 0.9));
             setTimeout(() => { flash.remove(); document.body.className = ''; goHome(); }, 2500);
         }
     }
 
-    /* --- DRAGGING SUITE (INTEGRATED TOUCH + MOUSE) --- */
+    /* --- DRAGGING SUITE --- */
     function makeElementDraggable(dragElem, targetContainer, clickCallback) {
-        let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-        let hasMoved = false;
-
+        let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0; let hasMoved = false;
         dragElem.addEventListener('mousedown', dragMouseDown);
         dragElem.addEventListener('touchstart', dragTouchStart, { passive: false });
 
         function dragMouseDown(e) {
-            e.preventDefault(); hasMoved = false;
-            pos3 = e.clientX; pos4 = e.clientY;
+            e.preventDefault(); hasMoved = false; pos3 = e.clientX; pos4 = e.clientY;
             document.onmouseup = closeDragElement; document.onmousemove = elementDrag;
         }
         function dragTouchStart(e) {
-            hasMoved = false;
-            pos3 = e.touches[0].clientX; pos4 = e.touches[0].clientY;
+            hasMoved = false; pos3 = e.touches[0].clientX; pos4 = e.touches[0].clientY;
             document.ontouchend = closeDragElement; document.ontouchmove = elementTouchDrag;
         }
         function elementDrag(e) {
-            hasMoved = true;
-            pos1 = pos3 - e.clientX; pos2 = pos4 - e.clientY;
-            pos3 = e.clientX; pos4 = e.clientY;
-            updatePosition(targetContainer.offsetTop - pos2, targetContainer.offsetLeft - pos1);
+            hasMoved = true; pos1 = pos3 - e.clientX; pos2 = pos4 - e.clientY;
+            pos3 = e.clientX; pos4 = e.clientY; updatePosition(targetContainer.offsetTop - pos2, targetContainer.offsetLeft - pos1);
         }
         function elementTouchDrag(e) {
-            hasMoved = true;
-            pos1 = pos3 - e.touches[0].clientX; pos2 = pos4 - e.touches[0].clientY;
-            pos3 = e.touches[0].clientX; pos4 = e.touches[0].clientY;
-            updatePosition(targetContainer.offsetTop - pos2, targetContainer.offsetLeft - pos1);
+            hasMoved = true; pos1 = pos3 - e.touches[0].clientX; pos2 = pos4 - e.touches[0].clientY;
+            pos3 = e.touches[0].clientX; pos4 = e.touches[0].clientY; updatePosition(targetContainer.offsetTop - pos2, targetContainer.offsetLeft - pos1);
         }
         function updatePosition(top, left) {
             if(top < 0) top = 0; if(top > window.innerHeight - 60) top = window.innerHeight - 60;
@@ -517,8 +559,7 @@
             if(targetContainer === modPanel) targetContainer.style.transform = 'none';
         }
         function closeDragElement() {
-            document.onmouseup = null; document.onmousemove = null;
-            document.ontouchend = null; document.ontouchmove = null;
+            document.onmouseup = null; document.onmousemove = null; document.ontouchend = null; document.ontouchmove = null;
             if (!hasMoved && clickCallback) clickCallback();
         }
     }
